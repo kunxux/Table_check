@@ -1,0 +1,34 @@
+{
+  "name": "示例3: 掉落表→道具表 跨表外键校验",
+  "description": "检查掉落表中的 item_id 是否都在道具表的 id 中存在",
+  "inputs": {
+    "掉落表": "demo/test_data/掉落表.xlsx",
+    "道具表": "demo/test_data/道具表.xlsx"
+  },
+  "chain": [
+    {
+      "step": 1,
+      "name": "外键存在性检查",
+      "rule": "foreign_key",
+      "mode": "validate",
+      "config": {
+        "source_table": "掉落表",
+        "source_column": "item_id",
+        "target_table": "道具表",
+        "target_column": "id"
+      }
+    },
+    {
+      "step": 2,
+      "name": "外键双向一致性检查",
+      "rule": "fk_consistency",
+      "mode": "validate",
+      "config": {
+        "source_table": "掉落表",
+        "source_column": "item_id",
+        "target_table": "道具表",
+        "target_column": "id"
+      }
+    }
+  ]
+}

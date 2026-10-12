@@ -1,0 +1,59 @@
+{
+  "name": "示例1: 道具表单表原子校验",
+  "description": "对道具表进行非空、类型、范围、枚举四项检查",
+  "inputs": {
+    "道具表": "demo/test_data/道具表.xlsx"
+  },
+  "chain": [
+    {
+      "step": 1,
+      "name": "非空校验",
+      "rule": "not_null",
+      "mode": "validate",
+      "config": {
+        "table": "道具表",
+        "columns": ["id", "name", "type", "quality", "price", "level"]
+      }
+    },
+    {
+      "step": 2,
+      "name": "类型校验",
+      "rule": "type_check",
+      "mode": "validate",
+      "config": {
+        "table": "道具表",
+        "column_types": {
+          "id": "int",
+          "name": "str",
+          "quality": "int",
+          "price": "int"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "name": "范围校验",
+      "rule": "range_check",
+      "mode": "validate",
+      "config": {
+        "table": "道具表",
+        "ranges": {
+          "price": {"min": 0, "max": 10000},
+          "quality": {"min": 1, "max": 5}
+        }
+      }
+    },
+    {
+      "step": 4,
+      "name": "枚举校验",
+      "rule": "enum_check",
+      "mode": "validate",
+      "config": {
+        "table": "道具表",
+        "enums": {
+          "type": [1, 2, 3, 4]
+        }
+      }
+    }
+  ]
+}

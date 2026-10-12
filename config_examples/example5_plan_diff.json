@@ -1,0 +1,47 @@
+{
+  "name": "示例5: 掉落数据 vs 策划规划对比",
+  "description": "将实际掉落数据聚合后与策划规划表逐项对比，一步到位发现差异",
+  "inputs": {
+    "掉落表": "demo/test_data/掉落表.xlsx",
+    "规划表": "demo/test_data/掉落规划表.xlsx"
+  },
+  "chain": [
+    {
+      "step": 1,
+      "name": "按item_id聚合实际掉落",
+      "rule": "groupby_agg",
+      "mode": "transform",
+      "config": {
+        "source": "掉落表",
+        "group_by": ["item_id"],
+        "aggregations": {"drop_rate": "sum", "min_count": "sum"}
+      },
+      "output_table": "实际聚合"
+    },
+    {
+      "step": 2,
+      "name": "关联实际与规划",
+      "rule": "join_tables",
+      "mode": "transform",
+      "config": {
+        "join_sequence": [
+          {"left": "规划表", "right": "实际聚合", "on": ["item_id"], "how": "left"}
+        ]
+      },
+      "input_tables": ["规划表", "实际聚合"],
+      "output_table": "对比宽表"
+    },
+    {
+      "step": 3,
+      "name": "按item_id对齐对比差异",
+      "rule": "pk_diff",
+      "mode": "validate",
+      "config": {
+        "source_table": "实际聚合",
+        "expected_df": "规划表",
+        "key_column": "item_id",
+        "compare_columns": []
+      }
+    }
+  ]
+}

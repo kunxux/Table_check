@@ -1,0 +1,50 @@
+{
+  "name": "示例4: 多表联表聚合 — 掉落+道具→可读汇总",
+  "description": "将掉落表与道具表关联，清洗并整理为策划可读的掉落汇总表",
+  "inputs": {
+    "掉落表": "demo/test_data/掉落表.xlsx",
+    "道具表": "demo/test_data/道具表.xlsx"
+  },
+  "chain": [
+    {
+      "step": 1,
+      "name": "过滤空item_id",
+      "rule": "filter_rows",
+      "mode": "transform",
+      "config": {
+        "source": "掉落表",
+        "filters": [
+          {"column": "item_id", "op": "!=", "value": null}
+        ]
+      },
+      "output_table": "有效掉落"
+    },
+    {
+      "step": 2,
+      "name": "关联道具表获取名称和类型",
+      "rule": "join_tables",
+      "mode": "transform",
+      "config": {
+        "join_sequence": [
+          {"left": "有效掉落", "right": "道具表",
+           "left_on": ["item_id"], "right_on": ["id"], "how": "left"}
+        ]
+      },
+      "input_tables": ["有效掉落", "道具表"],
+      "output_table": "掉落宽表"
+    },
+    {
+      "step": 3,
+      "name": "精简列和重命名",
+      "rule": "column_map",
+      "mode": "transform",
+      "config": {
+        "source": "掉落宽表",
+        "select_columns": ["drop_id", "monster_name", "item_id", "name", "type", "quality", "drop_rate", "min_count", "max_count"],
+        "rename": {"name": "道具名称", "type": "道具类型"},
+        "drop_columns": ["drop_level", "id"]
+      },
+      "output_table": "最终掉落汇总"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "示例2: 道具表内跨列逻辑校验",
+  "description": "检查ID唯一性、列间比较、条件依赖",
+  "inputs": {
+    "道具表": "demo/test_data/道具表.xlsx"
+  },
+  "chain": [
+    {
+      "step": 1,
+      "name": "ID唯一性检查",
+      "rule": "unique_check",
+      "mode": "validate",
+      "config": {
+        "table": "道具表",
+        "columns": ["id"]
+      }
+    },
+    {
+      "step": 2,
+      "name": "组合键唯一性检查",
+      "rule": "composite_key",
+      "mode": "validate",
+      "config": {
+        "table": "道具表",
+        "key_columns": ["type", "quality"]
+      }
+    },
+    {
+      "step": 3,
+      "name": "条件依赖-武器必须填写描述",
+      "rule": "conditional_required",
+      "mode": "validate",
+      "config": {
+        "table": "道具表",
+        "conditions": [
+          {
+            "if_column": "type",
+            "if_value": 2,
+            "then_columns": ["desc"]
+          }
+        ]
+      }
+    }
+  ]
+}
